@@ -213,7 +213,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 29.41, y: 26.43, z: -3.8610156}
+  m_LocalPosition: {x: 50, y: 50, z: -3.8610156}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -289,7 +289,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -20000
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -13479,8 +13479,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bdd409675344e0e48b1587bacc9f47e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mapSizeX: 100
-  mapSizeY: 100
+  mapSizeX: 50
+  mapSizeY: 50
   groundTileMap: {fileID: 1013455700}
   groundMapTiles:
   - {fileID: 11400000, guid: d99ed9b5128d2114fa7dadec8251cd21, type: 2}
@@ -13496,5 +13496,8 @@ MonoBehaviour:
     type: 3}
   walkbyPlantPrefab: {fileID: 2488818562611553775, guid: dfd380bf0ecdabb469283f61274596d3,
     type: 3}
+  tree1Prefab: {fileID: 6881049287998918080, guid: ff8b3bdc5f8dbb341b055d7fc1e19ef6,
+    type: 3}
   plantParent: {fileID: 1037321723}
-  walkbyPlantCount: 1000
+  walkbyPlantCount: 3000
+  treeCount: 30

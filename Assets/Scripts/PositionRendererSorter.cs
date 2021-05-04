@@ -22,7 +22,7 @@ public class PositionRendererSorter : MonoBehaviour
         if (timer <= 0)
         {
             timer = timerMax;
-            myRenderer.sortingOrder = (int)(sortingOrderBase - (transform.position.y - offset));
+            myRenderer.sortingOrder = (int)(sortingOrderBase - (transform.position.y - offset) * 100);
             if (runOnlyOnce)
             {
                 Destroy(this);

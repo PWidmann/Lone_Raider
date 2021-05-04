@@ -5,9 +5,10 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 1.3f;
+    
 
-    CharacterController controller;
     Animator animator;
+    Rigidbody2D rb2D;
 
     // Input
     Vector2 input;
@@ -15,10 +16,12 @@ public class PlayerController : MonoBehaviour
     float vertical;
     Vector2 movement;
 
+
+
     private void Start()
     {
-        controller = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
+        rb2D = GetComponent<Rigidbody2D>();
 
         CameraController.Instance.SetCameraTarget(gameObject);
     }
@@ -35,11 +38,22 @@ public class PlayerController : MonoBehaviour
             animator.SetBool("isMoving", true);
 
             movement = input * moveSpeed * Time.deltaTime;
-            controller.Move(movement);
+            //transform.Translate(movement);
+            rb2D.transform.Translate(movement);
         }
         else
         {
             animator.SetBool("isMoving", false);
         }
     }
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        if (collider.transform.GetComponent<IInteractible>() != null)
+        {
+            collider.gameObject.GetComponent<IInteractible>().Interact();
+        }
+    }
+
+    
 }
