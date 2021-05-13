@@ -13,12 +13,20 @@ public class RangeObjectVisibility : MonoBehaviour
         circleCollider2D.radius = visibilityRadius;
     }
 
-    private void OnTriggerStay2D(Collider2D collider)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
         if (collider.transform.GetComponent<IInteractible>() != null)
         {
             collider.transform.GetComponent<Animator>().enabled = true;
             collider.transform.GetComponent<Renderer>().enabled = true;
+        }
+
+        if (collider.transform.GetComponent<IMonster>() != null)
+        {
+            collider.transform.GetComponent<Animator>().enabled = true;
+            collider.transform.GetComponent<Renderer>().enabled = true;
+            collider.transform.GetComponent<Enemy>().enabled = true;
+            collider.transform.GetComponent<PositionRendererSorter>().enabled = true;
         }
     }
 
@@ -29,6 +37,14 @@ public class RangeObjectVisibility : MonoBehaviour
             collision.transform.GetComponent<Animator>().enabled = false;
             collision.transform.GetComponent<Renderer>().enabled = false;
             
+        }
+
+        if (collision.transform.GetComponent<IMonster>() != null)
+        {
+            collision.transform.GetComponent<Animator>().enabled = false;
+            collision.transform.GetComponent<Renderer>().enabled = false;
+            collision.transform.GetComponent<Enemy>().enabled = false;
+            collision.transform.GetComponent<PositionRendererSorter>().enabled = false;
         }
     }
 }

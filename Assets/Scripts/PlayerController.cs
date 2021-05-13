@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering.Universal;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 1.3f;
-    
+    [SerializeField] Light2D lightPlayer;
 
     Animator animator;
     Rigidbody2D rb2D;
@@ -16,7 +17,7 @@ public class PlayerController : MonoBehaviour
     float vertical;
     Vector2 movement;
 
-
+    bool nightOn = false;
 
     private void Start()
     {
@@ -45,6 +46,22 @@ public class PlayerController : MonoBehaviour
         {
             animator.SetBool("isMoving", false);
         }
+
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            nightOn = !nightOn;
+        }
+
+        if (nightOn)
+        {
+            lightPlayer.intensity = 0.9f;
+            GameInterface.Instance.ambientLight.intensity = 0;
+        }
+        else
+        {
+            lightPlayer.intensity = 0.1f;
+            GameInterface.Instance.ambientLight.intensity = 0.9f;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -55,5 +72,5 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    
+
 }

@@ -15,11 +15,13 @@ public class MapGenerator : MonoBehaviour
 
     [Header("Player Preafab")]
     [SerializeField] GameObject playerPrefab;
+    [SerializeField] GameObject ratPrefab;
     [SerializeField] GameObject walkbyPlantPrefab;
     [SerializeField] GameObject tree1Prefab;
     [SerializeField] Transform plantParent;
     [SerializeField] int walkbyPlantCount;
     [SerializeField] int treeCount;
+    [SerializeField] int ratCount;
 
     private void Start()
     {
@@ -55,6 +57,14 @@ public class MapGenerator : MonoBehaviour
             tree.transform.parent = plantParent;
 
             tree.gameObject.transform.position = new Vector3(Random.Range(0f, (float)mapSizeX), Random.Range(0f, (float)mapSizeY), -1f);
+        }
+
+        for (int i = 0; i < ratCount; i++)
+        {
+            GameObject rat = Instantiate(ratPrefab);
+            rat.transform.parent = plantParent;
+
+            rat.gameObject.transform.position = new Vector3(Random.Range(0f, (float)mapSizeX), Random.Range(0f, (float)mapSizeY), -1f);
         }
     }
 
