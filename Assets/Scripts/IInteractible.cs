@@ -6,5 +6,5 @@ public interface IInteractible
 {
     void Interact();
 
-    void SetVisible();
+    void SetVisibility(bool isVisible);
 }

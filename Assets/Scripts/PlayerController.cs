@@ -71,6 +71,4 @@ public class PlayerController : MonoBehaviour
             collider.gameObject.GetComponent<IInteractible>().Interact();
         }
     }
-
-
 }

@@ -4,5 +4,5 @@ using UnityEngine;
 
 public interface IMonster
 {
-    void SetVisible();
+    void SetVisibility(bool value);
 }

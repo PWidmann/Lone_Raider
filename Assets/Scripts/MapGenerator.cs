@@ -17,6 +17,8 @@ public class MapGenerator : MonoBehaviour
     [SerializeField] GameObject playerPrefab;
     [SerializeField] GameObject ratPrefab;
     [SerializeField] GameObject walkbyPlantPrefab;
+    [SerializeField] GameObject walkbyPlantPrefab2;
+    [SerializeField] GameObject walkbyPlantPrefab3;
     [SerializeField] GameObject tree1Prefab;
     [SerializeField] Transform plantParent;
     [SerializeField] int walkbyPlantCount;
@@ -45,10 +47,30 @@ public class MapGenerator : MonoBehaviour
 
         for (int i = 0; i < walkbyPlantCount; i++)
         {
-            GameObject plant = Instantiate(walkbyPlantPrefab);
-            plant.transform.parent = plantParent;
+            int rnd = Random.Range(0, 3);
 
-            plant.gameObject.transform.position = new Vector3(Random.Range(0f, (float)mapSizeX), Random.Range(0f, (float)mapSizeY), -1f);
+            GameObject plant;
+            
+            switch (rnd)
+            {
+                case 0:
+                    plant = Instantiate(walkbyPlantPrefab);
+                    plant.transform.parent = plantParent;
+                    plant.gameObject.transform.position = new Vector3(Random.Range(0f, (float)mapSizeX), Random.Range(0f, (float)mapSizeY), -1f);
+                    break;
+                case 1:
+                    plant = Instantiate(walkbyPlantPrefab2);
+                    plant.transform.parent = plantParent;
+                    plant.gameObject.transform.position = new Vector3(Random.Range(0f, (float)mapSizeX), Random.Range(0f, (float)mapSizeY), -1f);
+                    break;
+                case 2:
+                    plant = Instantiate(walkbyPlantPrefab3);
+                    plant.transform.parent = plantParent;
+                    plant.gameObject.transform.position = new Vector3(Random.Range(0f, (float)mapSizeX), Random.Range(0f, (float)mapSizeY), -1f);
+                    break;
+            }
+
+            
         }
 
         for (int i = 0; i < treeCount; i++)

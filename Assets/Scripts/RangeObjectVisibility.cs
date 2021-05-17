@@ -15,36 +15,30 @@ public class RangeObjectVisibility : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
+        // Set objects active
+
         if (collider.transform.GetComponent<IInteractible>() != null)
         {
-            collider.transform.GetComponent<Animator>().enabled = true;
-            collider.transform.GetComponent<Renderer>().enabled = true;
+            collider.transform.GetComponent<IInteractible>().SetVisibility(true);
         }
 
         if (collider.transform.GetComponent<IMonster>() != null)
         {
-            collider.transform.GetComponent<Animator>().enabled = true;
-            collider.transform.GetComponent<Renderer>().enabled = true;
-            collider.transform.GetComponent<Enemy>().enabled = true;
-            collider.transform.GetComponent<PositionRendererSorter>().enabled = true;
+            collider.transform.GetComponent<IMonster>().SetVisibility(true);
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
+        // Deactivate objects
         if (collision.transform.GetComponent<IInteractible>() != null)
         {
-            collision.transform.GetComponent<Animator>().enabled = false;
-            collision.transform.GetComponent<Renderer>().enabled = false;
-            
+            collision.transform.GetComponent<IInteractible>().SetVisibility(false);
         }
 
         if (collision.transform.GetComponent<IMonster>() != null)
         {
-            collision.transform.GetComponent<Animator>().enabled = false;
-            collision.transform.GetComponent<Renderer>().enabled = false;
-            collision.transform.GetComponent<Enemy>().enabled = false;
-            collision.transform.GetComponent<PositionRendererSorter>().enabled = false;
+            collision.transform.GetComponent<IMonster>().SetVisibility(false);
         }
     }
 }

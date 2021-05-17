@@ -22,6 +22,7 @@ public class Enemy : MonoBehaviour, IMonster
     private float waitTimer = 0;
     private float maxWaitTimer = 3f;
 
+    private bool isVisible = false;
 
     private void Awake()
     {
@@ -120,8 +121,6 @@ public class Enemy : MonoBehaviour, IMonster
             animator.SetFloat("verticalMovement", direction.y);
             transform.Translate(new Vector3(movement.x, movement.y, 0));
         }
-
-        
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -132,8 +131,21 @@ public class Enemy : MonoBehaviour, IMonster
         }
     }
 
-    public void SetVisible()
+    public void SetVisibility(bool visible)
     {
-        
+        if (visible)
+        {
+            transform.GetComponent<Animator>().enabled = true;
+            transform.GetComponent<Renderer>().enabled = true;
+            transform.GetComponent<PositionRendererSorter>().enabled = true;
+            transform.GetComponent<Enemy>().enabled = true;
+        }
+        else
+        {
+            transform.GetComponent<Animator>().enabled = false;
+            transform.GetComponent<Renderer>().enabled = false;
+            transform.GetComponent<PositionRendererSorter>().enabled = false;
+            transform.GetComponent<Enemy>().enabled = false;
+        }
     }
 }

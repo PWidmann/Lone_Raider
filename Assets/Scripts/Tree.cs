@@ -4,15 +4,11 @@ using UnityEngine;
 
 public class Tree : MonoBehaviour, IInteractible
 {
-    
-
-    // Start is called before the first frame update
     void Start()
     {
         gameObject.transform.GetComponent<Renderer>().enabled = false;
     }
 
-    // Update is called once per frame
     void Update()
     {
         
@@ -23,8 +19,16 @@ public class Tree : MonoBehaviour, IInteractible
         
     }
 
-    public void SetVisible()
+    public void SetVisibility(bool isVisible)
     {
-        gameObject.transform.GetComponent<Renderer>().enabled = true;
+        if (isVisible)
+        {
+            gameObject.transform.GetComponent<Renderer>().enabled = true;
+        }
+        else
+        {
+            gameObject.transform.GetComponent<Renderer>().enabled = false;
+        }
+        
     }
 }
