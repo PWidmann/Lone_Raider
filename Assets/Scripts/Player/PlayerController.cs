@@ -38,6 +38,8 @@ public class PlayerController : MonoBehaviour
 
             SaveSystem.SaveWorld(GameManager.CurrentWorldName, data.biomeMapArray, GameManager.CurrentSeed, (int)transform.position.x, (int)transform.position.y);
             Debug.Log("Quicksave current world '" + data.gameName + "'");
+
+            GameObject.Find("GameInterface").GetComponent<GameInterface>().ShowQuicksavePanel();
         }
 
 

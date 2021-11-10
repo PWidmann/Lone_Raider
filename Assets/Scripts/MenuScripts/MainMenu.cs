@@ -14,6 +14,7 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private GameObject settingsButton;
     [SerializeField] private GameObject quitButton;
     [SerializeField] private GameObject settingsPanel;
+    
 
     [Header("Settings Panel")]
     [SerializeField] private Dropdown resolutionDropdown;
@@ -23,12 +24,6 @@ public class MainMenu : MonoBehaviour
     {
         loadWorldPanel.SetActive(false);
         settingsPanel.SetActive(false);
-    }
-
-    
-    void Update()
-    {
-        
     }
 
 

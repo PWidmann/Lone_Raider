@@ -7,18 +7,24 @@ public class GameInterface : MonoBehaviour
 {
     public static GameInterface Instance;
 
-    [SerializeField] GameObject inventoryPanel;
-    [SerializeField] GameObject escapeMenuPanel;
+    [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private GameObject escapeMenuPanel;
+    [SerializeField] private GameObject QuicksavePanel;
 
     [SerializeField] private Dropdown resolutionDropdown;
     [SerializeField] private Dropdown windowDropdown;
 
     public Light2D ambientLight;
 
+    private float quicksaveTimer;
+    private bool startQuicksave = false;
+
     void Start()
     {
         if (Instance == null)
             Instance = this;
+
+        QuicksavePanel.SetActive(false);
     }
     
     void Update()
@@ -31,6 +37,17 @@ public class GameInterface : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             escapeMenuPanel.SetActive(!escapeMenuPanel.activeSelf);
+        }
+
+        if (startQuicksave)
+        {
+            quicksaveTimer -= Time.deltaTime;
+
+            if (quicksaveTimer < 0)
+            {
+                startQuicksave = false;
+                QuicksavePanel.SetActive(false);
+            } 
         }
     }
 
@@ -59,5 +76,10 @@ public class GameInterface : MonoBehaviour
         escapeMenuPanel.SetActive(!escapeMenuPanel.activeSelf);
     }
 
-
+    public void ShowQuicksavePanel()
+    {
+        startQuicksave = true;
+        quicksaveTimer = 2f;
+        QuicksavePanel.SetActive(true);
+    }
 }
