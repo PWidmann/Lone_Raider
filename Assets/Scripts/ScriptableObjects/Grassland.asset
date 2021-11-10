@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 74aa00b89fca73746af0b82ae6c57609, type: 3}
+  m_Name: Grassland
+  m_EditorClassIdentifier: 
+  biomeName: Grassland
+  biomeWidth: 100
+  biomeHeight: 100
+  groundMapTiles:
+  - {fileID: 11400000, guid: d99ed9b5128d2114fa7dadec8251cd21, type: 2}
+  - {fileID: 11400000, guid: b982ed01564ee1a41b0b78392ebacc61, type: 2}
+  - {fileID: 11400000, guid: f3acd4093c2ca6d4b8ea876ab51ad7f2, type: 2}
+  - {fileID: 11400000, guid: 4ad8d250f58d63d41b02a49d08678469, type: 2}
+  - {fileID: 11400000, guid: e22fbb6b1890aa545b5c7ecbeaee4db1, type: 2}
+  - {fileID: 11400000, guid: 727a810f57ce0304bac35c016ab5a9bf, type: 2}
+  - {fileID: 11400000, guid: 1617e7a366a7fe646b16f70ac6347c90, type: 2}
+  - {fileID: 11400000, guid: 1b6840a34ea4a38479ae2f6b78b93090, type: 2}
+  - {fileID: 11400000, guid: 06e81e61668041141981646665f92bcd, type: 2}
+  littleBorderObjects:
+  - {fileID: 6881049287998918080, guid: 86ffae4891a08a84d80e1aed1ceed9c1, type: 3}
+  - {fileID: 6881049287998918080, guid: 434bdaf63c05a0d43a7db91f8319ff15, type: 3}
+  bigBorderObjects:
+  - {fileID: 6881049287998918080, guid: ff8b3bdc5f8dbb341b055d7fc1e19ef6, type: 3}
+  - {fileID: 6881049287998918080, guid: fbe7c01d7fa9f2746b44ac7d9944b625, type: 3}
+  - {fileID: 6881049287998918080, guid: 45098ed7ea8315840bd972cfab4213c4, type: 3}
