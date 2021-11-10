@@ -32,6 +32,15 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F5))
+        {
+            SaveData data = SaveSystem.LoadWorld(GameManager.CurrentWorldName);
+
+            SaveSystem.SaveWorld(GameManager.CurrentWorldName, data.biomeMapArray, GameManager.CurrentSeed, (int)transform.position.x, (int)transform.position.y);
+            Debug.Log("Quicksave current world '" + data.gameName + "'");
+        }
+
+
         horizontal = Input.GetAxisRaw("Horizontal");
         vertical = Input.GetAxisRaw("Vertical");
         input = new Vector2(horizontal, vertical).normalized;

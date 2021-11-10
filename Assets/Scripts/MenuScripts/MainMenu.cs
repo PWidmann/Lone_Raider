@@ -39,6 +39,11 @@ public class MainMenu : MonoBehaviour
         // Read the save file folder and display all save files with a button
         loadWorldPanel.SetActive(true);
 
+        if (!Directory.Exists(Application.dataPath + "/SaveData"))
+        {
+            Directory.CreateDirectory(Application.dataPath + "/SaveData");
+        }
+
         string path = Application.dataPath + "/SaveData/";
         var info = new DirectoryInfo(path);
         var fileInfo = info.GetFiles();

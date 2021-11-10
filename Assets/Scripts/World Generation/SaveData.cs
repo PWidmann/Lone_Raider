@@ -12,10 +12,12 @@ public class SaveData
     public int playerYpos;
 
 
-    public SaveData(string _gameName, int[,] _mapArray, int _seed)
+    public SaveData(string _gameName, int[,] _mapArray, int _seed, int _playerX, int _playerY)
     {
         gameName = _gameName;
         biomeMapArray = _mapArray;
         seed = _seed;
+        playerXpos = _playerX;
+        playerYpos = _playerY;
     }
 }

@@ -21,6 +21,8 @@ public class MapGenerator : MonoBehaviour
     private int seed;
     private SaveData saveData;
 
+    private Vector2Int playerStart;
+
     private void Update()
     {
         if (GameManager.CreateNewWorld == true)
@@ -28,8 +30,9 @@ public class MapGenerator : MonoBehaviour
             CreateBiomes();
 
             SpawnPlayer(biomes[0].biomeWidth / 3, biomes[0].biomeHeight / 3);
-            
-            
+
+            Debug.Log("Created new world '" + GameManager.NewWorldName + "' and saved world to file");
+            GameManager.CurrentWorldName = GameManager.NewWorldName;
             GameManager.CreateNewWorld = false;
             GameManager.NewWorldName = "";
         }
@@ -40,11 +43,17 @@ public class MapGenerator : MonoBehaviour
 
             // Get save data
             saveData = SaveSystem.LoadWorld(GameManager.LoadWorldName);
+            Debug.Log("Savegame '" + saveData.gameName + "' loaded");
+
+            GameManager.CurrentWorldName = saveData.gameName;
+            GameManager.CurrentSeed = saveData.seed;
+            GameManager.CurrentMapArray = saveData.biomeMapArray;
             GameManager.LoadWorldName = "";
 
             LoadBiomes();
 
-            SpawnPlayer(biomes[0].biomeWidth / 3, biomes[0].biomeHeight / 3);
+            SpawnPlayer(saveData.playerXpos, saveData.playerYpos);
+            
         }
     }
 
@@ -106,7 +115,13 @@ public class MapGenerator : MonoBehaviour
                 }
             }
 
+            playerStart = new Vector2Int(biomes[0].biomeWidth / 3, biomes[0].biomeHeight / 3);
+
+            GameManager.CurrentMapArray = finalMapArray;
+
             SaveWorld();
+
+
 
             // set grass tiles
             for (int x = 0; x < biome.biomeWidth; x++)
@@ -207,6 +222,9 @@ public class MapGenerator : MonoBehaviour
             borderTileMap.size = new Vector3Int(biome.biomeWidth, biome.biomeHeight, 1);
 
             finalMapArray = saveData.biomeMapArray;
+            
+
+            
 
 
             // set grass tiles
@@ -266,8 +284,6 @@ public class MapGenerator : MonoBehaviour
                         plant.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
                         finalMapArray[x, y] = 3; // 3 = clutter obstacles
                     }
-
-                    Debug.Log("Final map array step in loading" + finalMapArray[x, y]);
                 }
             }
 
@@ -280,9 +296,9 @@ public class MapGenerator : MonoBehaviour
 
     private void SaveWorld()
     {
-        SaveSystem.SaveWorld(GameManager.NewWorldName, finalMapArray, seed);
-        Debug.Log("saved world " + GameManager.NewWorldName + " seeed: " + seed);
+        SaveSystem.SaveWorld(GameManager.NewWorldName, GameManager.CurrentMapArray, seed, playerStart.x, playerStart.y);
     }
+
 
     void SpawnPlayer(int xPos, int yPos)
     {
@@ -291,6 +307,8 @@ public class MapGenerator : MonoBehaviour
             GameObject player = Instantiate(playerPrefab);
             player.gameObject.transform.position = new Vector3(xPos, yPos, -1);
             playerSpawned = true;
+            playerStart.x = xPos;
+            playerStart.y = yPos;
         }
     }
 
