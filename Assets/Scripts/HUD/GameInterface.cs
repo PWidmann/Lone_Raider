@@ -9,7 +9,9 @@ public class GameInterface : MonoBehaviour
 
     [SerializeField] private GameObject inventoryPanel;
     [SerializeField] private GameObject escapeMenuPanel;
-    [SerializeField] private GameObject QuicksavePanel;
+    [SerializeField] private GameObject settingsPanel;
+    [SerializeField] private GameObject quicksavePanel;
+    [SerializeField] private GameObject darkenBackgroundPanel;
 
     [SerializeField] private Dropdown resolutionDropdown;
     [SerializeField] private Dropdown windowDropdown;
@@ -24,7 +26,8 @@ public class GameInterface : MonoBehaviour
         if (Instance == null)
             Instance = this;
 
-        QuicksavePanel.SetActive(false);
+        quicksavePanel.SetActive(false);
+        settingsPanel.SetActive(false);
     }
     
     void Update()
@@ -37,6 +40,20 @@ public class GameInterface : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             escapeMenuPanel.SetActive(!escapeMenuPanel.activeSelf);
+
+            if (escapeMenuPanel.activeSelf == true)
+            {
+                darkenBackgroundPanel.SetActive(true);
+            }
+            else
+            {
+                darkenBackgroundPanel.SetActive(false);
+            }
+
+            if (settingsPanel.activeSelf == true)
+            {
+                BackButton();
+            }
         }
 
         if (startQuicksave)
@@ -46,7 +63,7 @@ public class GameInterface : MonoBehaviour
             if (quicksaveTimer < 0)
             {
                 startQuicksave = false;
-                QuicksavePanel.SetActive(false);
+                quicksavePanel.SetActive(false);
             } 
         }
     }
@@ -74,12 +91,25 @@ public class GameInterface : MonoBehaviour
     public void ContinueButton()
     {
         escapeMenuPanel.SetActive(!escapeMenuPanel.activeSelf);
+        darkenBackgroundPanel.SetActive(false);
+    }
+
+    public void SettingsButton()
+    {
+        escapeMenuPanel.SetActive(false);
+        settingsPanel.SetActive(true);
+    }
+
+    public void BackButton()
+    {
+        settingsPanel.SetActive(false);
+        escapeMenuPanel.SetActive(true); 
     }
 
     public void ShowQuicksavePanel()
     {
         startQuicksave = true;
         quicksaveTimer = 2f;
-        QuicksavePanel.SetActive(true);
+        quicksavePanel.SetActive(true);
     }
 }
