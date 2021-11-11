@@ -4,7 +4,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public static class SaveSystem
 {
-    public static void SaveWorld(string _worldName, int[,] _biomeMapArray, int _seed, int _playerX, int _playerY)
+    public static void SaveWorld(string _worldName, int[,] _biomeMapArray, int _seed, float _playerX, float _playerY)
     {
         BinaryFormatter formatter = new BinaryFormatter();
 

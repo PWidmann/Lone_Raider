@@ -8,11 +8,11 @@ public class SaveData
     public string gameName;
     public int[,] biomeMapArray;
     public int seed;
-    public int playerXpos;
-    public int playerYpos;
+    public float playerXpos;
+    public float playerYpos;
 
 
-    public SaveData(string _gameName, int[,] _mapArray, int _seed, int _playerX, int _playerY)
+    public SaveData(string _gameName, int[,] _mapArray, int _seed, float _playerX, float _playerY)
     {
         gameName = _gameName;
         biomeMapArray = _mapArray;

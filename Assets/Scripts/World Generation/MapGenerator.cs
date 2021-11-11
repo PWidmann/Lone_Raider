@@ -21,7 +21,7 @@ public class MapGenerator : MonoBehaviour
     private int seed;
     private SaveData saveData;
 
-    private Vector2Int playerStart;
+    private Vector2 playerStart;
 
     private void Update()
     {
@@ -29,7 +29,7 @@ public class MapGenerator : MonoBehaviour
         {
             CreateBiomes();
 
-            SpawnPlayer(biomes[0].biomeWidth / 3, biomes[0].biomeHeight / 3);
+            
 
             Debug.Log("Created new world '" + GameManager.NewWorldName + "' and saved world to file");
             GameManager.CurrentWorldName = GameManager.NewWorldName;
@@ -39,20 +39,20 @@ public class MapGenerator : MonoBehaviour
 
         if (GameManager.LoadWorld == true)
         {
-            GameManager.LoadWorld = false;
-
             // Get save data
             saveData = SaveSystem.LoadWorld(GameManager.LoadWorldName);
             Debug.Log("Savegame '" + saveData.gameName + "' loaded");
 
+            GameManager.LoadWorld = false;
+            GameManager.LoadWorldName = "";
+
             GameManager.CurrentWorldName = saveData.gameName;
             GameManager.CurrentSeed = saveData.seed;
             GameManager.CurrentMapArray = saveData.biomeMapArray;
-            GameManager.LoadWorldName = "";
-
+            
             LoadBiomes();
 
-            SpawnPlayer(saveData.playerXpos, saveData.playerYpos);
+            LoadPlayerPos(saveData.playerXpos, saveData.playerYpos);
             
         }
     }
@@ -61,26 +61,29 @@ public class MapGenerator : MonoBehaviour
 
     void CreateBiomes()
     {
-        seed = Random.Range(0, 5000);
-
+        // Add biomes (scriptable objects) in the mapgenerator component in the main scene
         foreach (BiomeScriptableObject biome in biomes)
         {
-            
-            // Create perlin noise with random seed
-            noise = new PerlinNoise(seed, 7, 4, 1f, 0.5f, 6);
+            ////
+            /// Main algorithm how biomes look
 
-            falloffMap = FalloffGenerator.GenerateFalloffMap(biome.biomeWidth, biome.biomeHeight, 6f, 4f);
+            seed = Random.Range(0, 5000);
+            // Create perlin noise with random seed
+            noise = new PerlinNoise(seed, 8, 4f, 1f, 1.3f, 6);
+            falloffMap = FalloffGenerator.GenerateFalloffMap(biome.biomeWidth, biome.biomeHeight, 6f, 2f);
             finalMapArray = new int[biome.biomeWidth, biome.biomeHeight];
 
+            // Create biome objects and add scripts for the Unity tilemap system
             GameObject biomeObject = new GameObject(biome.biomeName);
             biomeObject.transform.parent = transform;
-            
 
+            // Basic floor tilemap
             GameObject groundTileMapObject = new GameObject("GroundTileMap");
             groundTileMapObject.transform.parent = biomeObject.transform;
             groundTileMapObject.AddComponent<Tilemap>();
             groundTileMapObject.AddComponent<TilemapRenderer>().sortingOrder = -20000;
 
+            // Collision map
             GameObject borderTileMapObject = new GameObject("BorderTileMap");
             borderTileMapObject.transform.parent = biomeObject.transform;
             borderTileMapObject.AddComponent<Tilemap>();
@@ -91,20 +94,22 @@ public class MapGenerator : MonoBehaviour
             borderTileMapObject.AddComponent<CompositeCollider2D>();
             borderTileMapObject.AddComponent<TilemapCollider2D>().usedByComposite = true;
 
-
+            // Set size of map objects
             Tilemap groundTileMap = groundTileMapObject.GetComponent<Tilemap>();
             Tilemap borderTileMap = borderTileMapObject.GetComponent<Tilemap>();
             groundTileMap.size = new Vector3Int(biome.biomeWidth, biome.biomeHeight, 1);
             borderTileMap.size = new Vector3Int(biome.biomeWidth, biome.biomeHeight, 1);
             noiseValues = noise.GetNoiseValues(biome.biomeWidth, biome.biomeHeight);
 
+
+            // Fill final map array with noise values
             for (int x = 0; x < biome.biomeWidth; x++)
             {
                 for (int y = 0; y < biome.biomeHeight; y++)
                 {
                     noiseValues[x, y] = Mathf.Clamp01(noiseValues[x, y] - falloffMap[x, y]);
 
-                    if (noiseValues[x, y] > 0.2f)
+                    if (noiseValues[x, y] > 0.35f)
                     {
                         finalMapArray[x, y] = 1; // 1 = grass
                     }
@@ -116,12 +121,13 @@ public class MapGenerator : MonoBehaviour
             }
 
             playerStart = new Vector2Int(biomes[0].biomeWidth / 3, biomes[0].biomeHeight / 3);
-
             GameManager.CurrentMapArray = finalMapArray;
 
+            // Capture map values here since this
+            // is the main array before
+            // it's changed by plant placement
+            SpawnPlayer();
             SaveWorld();
-
-
 
             // set grass tiles
             for (int x = 0; x < biome.biomeWidth; x++)
@@ -148,24 +154,24 @@ public class MapGenerator : MonoBehaviour
             plants.transform.parent = biomeObject.transform;
 
             // place big trees
-            //for (int x = 0; x < biome.biomeWidth; x++)
-            //{
-            //    for (int y = 0; y < biome.biomeHeight; y++)
-            //    {
-            //        if (finalMapArray[x, y] == 0) // 0 is border
-            //        {
-            //            if (Random.Range(0, 10) > 7 && !IsNextToObject(x, y, 2, biome))
-            //            {
-            //                int rnd = Random.Range(0, biome.borderObjects.Length);
-            //                GameObject tree = Instantiate(biome.borderObjects[rnd]);
-            //                tree.transform.parent = plants.transform;
-            //
-            //                tree.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
-            //                finalMapArray[x, y] = 2; // 2 = tree
-            //            }
-            //        }
-            //    }
-            //}
+            for (int x = 0; x < biome.biomeWidth; x++)
+            {
+                for (int y = 0; y < biome.biomeHeight; y++)
+                {
+                    if (finalMapArray[x, y] == 0) // 0 is border
+                    {
+                        if (Random.Range(0, 10) > 7 && !IsNextToObject(x, y, 2, biome))
+                        {
+                            int rnd = Random.Range(0, biome.bigBorderObjects.Length);
+                            GameObject tree = Instantiate(biome.bigBorderObjects[rnd]);
+                            tree.transform.parent = plants.transform;
+            
+                            tree.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
+                            finalMapArray[x, y] = 2; // 2 = tree
+                        }
+                    }
+                }
+            }
 
             // Fill up border with little obstacles
             for (int x = 0; x < biome.biomeWidth; x++)
@@ -252,24 +258,24 @@ public class MapGenerator : MonoBehaviour
             plants.transform.parent = biomeObject.transform;
 
             // place big trees
-            //for (int x = 0; x < biome.biomeWidth; x++)
-            //{
-            //    for (int y = 0; y < biome.biomeHeight; y++)
-            //    {
-            //        if (finalMapArray[x, y] == 0) // 0 is border
-            //        {
-            //            if (Random.Range(0, 10) > 7 && !IsNextToObject(x, y, 2, biome))
-            //            {
-            //                int rnd = Random.Range(0, biome.borderObjects.Length);
-            //                GameObject tree = Instantiate(biome.borderObjects[rnd]);
-            //                tree.transform.parent = plants.transform;
-            //
-            //                tree.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
-            //                finalMapArray[x, y] = 2; // 2 = tree
-            //            }
-            //        }
-            //    }
-            //}
+            for (int x = 0; x < biome.biomeWidth; x++)
+            {
+                for (int y = 0; y < biome.biomeHeight; y++)
+                {
+                    if (finalMapArray[x, y] == 0) // 0 is border
+                    {
+                        if (Random.Range(0, 10) > 7 && !IsNextToObject(x, y, 2, biome))
+                        {
+                            int rnd = Random.Range(0, biome.bigBorderObjects.Length);
+                            GameObject tree = Instantiate(biome.bigBorderObjects[rnd]);
+                            tree.transform.parent = plants.transform;
+            
+                            tree.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
+                            finalMapArray[x, y] = 2; // 2 = tree
+                        }
+                    }
+                }
+            }
 
             // Fill up border with little obstacles
             for (int x = 0; x < biome.biomeWidth; x++)
@@ -300,12 +306,40 @@ public class MapGenerator : MonoBehaviour
     }
 
 
-    void SpawnPlayer(int xPos, int yPos)
+    void SpawnPlayer()
+    {
+        if (!playerSpawned)
+        {
+            for (int x = 30; x < GameManager.CurrentMapArray.GetLength(0) -30 ; x++)
+            {
+                for (int y = 30; y < GameManager.CurrentMapArray.GetLength(1) -30; y++)
+                {
+                    if (GameManager.CurrentMapArray[x, y] == 1) // Walkable grass
+                    {
+                        if (!IsNextToObject(x, y, 0, biomes[0]))
+                        {
+                            GameObject player = Instantiate(playerPrefab);
+                            player.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1);
+
+                            playerSpawned = true;
+                            playerStart.x = x;
+                            playerStart.y = y;
+
+                            return;
+                        }
+                    }
+                }
+            }
+            
+        }
+    }
+
+    void LoadPlayerPos(float xPos, float yPos)
     {
         if (!playerSpawned)
         {
             GameObject player = Instantiate(playerPrefab);
-            player.gameObject.transform.position = new Vector3(xPos, yPos, -1);
+            player.gameObject.transform.position = new Vector3(xPos + 0.5f, yPos + 0.5f, -1);
             playerSpawned = true;
             playerStart.x = xPos;
             playerStart.y = yPos;

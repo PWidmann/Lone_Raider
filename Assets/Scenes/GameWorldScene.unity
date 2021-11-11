@@ -4015,7 +4015,7 @@ GameObject:
   - component: {fileID: 1483600818}
   - component: {fileID: 1483600820}
   m_Layer: 0
-  m_Name: Map
+  m_Name: MapGenerator
   m_TagString: MapGenerator
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

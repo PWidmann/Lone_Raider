@@ -102,6 +102,8 @@ public class MainMenu : MonoBehaviour
                     GameObject go = Instantiate(worldButtonPrefab);
                     go.transform.SetParent(buttonContentPanel.transform);
                     go.GetComponentInChildren<Text>().text = fileName;
+
+                    // Add on click event to every world button
                     LoadWorld lw = go.AddComponent<LoadWorld>();
                     go.GetComponent<Button>().onClick.AddListener(new UnityEngine.Events.UnityAction(() => lw.LoadSaveFile()));
                 }
