@@ -3,10 +3,15 @@ Open World Pixel Art Game
 
 Current Progress:
 
+
 Procedurally generated main biome
+
 Save and load system for the world and character
+
 Character Controller with move and attack animations
+
 Custom object culling sytem for max performance on big maps
+
 Player map, progresses as the player unveils the world
 
 ![lr1](https://user-images.githubusercontent.com/60736526/147861452-4964337f-4556-4335-9b75-c9aa2e1a23fa.jpg)
