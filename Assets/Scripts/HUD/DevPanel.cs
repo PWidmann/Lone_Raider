@@ -13,7 +13,7 @@ public class DevPanel : MonoBehaviour
 
     private float uiUpdateTimer = 0;
     float displayFPSValue;
-    float avg = 0F;
+    public float avg = 0F;
     public int currentVisibilityRadius = 0;
 
     private void Awake()

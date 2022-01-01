@@ -129,4 +129,13 @@ public class ObjectVisibility: MonoBehaviour
                 go.SetActive(false);
         }
     }
+
+    public void EnableAllObjectsOnMap()
+    {
+        foreach (GameObject go in mapObjects)
+        {
+            if (go != null)
+                go.SetActive(true);
+        }
+    }
 }

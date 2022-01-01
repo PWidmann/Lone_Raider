@@ -16,6 +16,7 @@ public class GameInterface : MonoBehaviour
 
     [SerializeField] private Dropdown resolutionDropdown;
     [SerializeField] private Dropdown windowDropdown;
+    [SerializeField] private Toggle allObjectsToggle;
 
     private float quicksaveTimer;
     private bool startQuicksave = false;
@@ -133,5 +134,20 @@ public class GameInterface : MonoBehaviour
     public void VisibilityRangeUpateClearMap()
     {
         ObjectVisibility.Instance.DisableAllObjectsOnMap();
+    }
+
+    public void ShowAllObjectsAndPauseGameToggle()
+    {
+        if (allObjectsToggle.isOn)
+        {
+            Time.timeScale = 0;
+            ObjectVisibility.Instance.EnableAllObjectsOnMap();
+        }
+        else
+        {
+            Time.timeScale = 1;
+            ObjectVisibility.Instance.DisableAllObjectsOnMap();
+            DevPanel.Instance.avg = 0;
+        }
     }
 }
