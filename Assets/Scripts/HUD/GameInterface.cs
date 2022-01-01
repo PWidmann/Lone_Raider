@@ -8,6 +8,7 @@ public class GameInterface : MonoBehaviour
     public static GameInterface Instance;
 
     [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private GameObject mapPanel;
     [SerializeField] private GameObject escapeMenuPanel;
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject quicksavePanel;
@@ -36,6 +37,11 @@ public class GameInterface : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.C))
         {
             inventoryPanel.SetActive(!inventoryPanel.activeSelf);
+        }
+
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            mapPanel.SetActive(!mapPanel.activeSelf);
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
