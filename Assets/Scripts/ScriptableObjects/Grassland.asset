@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Grassland
   m_EditorClassIdentifier: 
   biomeName: Grassland
-  biomeWidth: 400
-  biomeHeight: 400
+  biomeWidth: 200
+  biomeHeight: 200
   groundMapTiles:
   - {fileID: 11400000, guid: d99ed9b5128d2114fa7dadec8251cd21, type: 2}
   - {fileID: 11400000, guid: b982ed01564ee1a41b0b78392ebacc61, type: 2}

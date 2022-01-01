@@ -44,20 +44,28 @@ public class GameInterface : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            escapeMenuPanel.SetActive(!escapeMenuPanel.activeSelf);
-
-            if (escapeMenuPanel.activeSelf == true)
+            if (mapPanel.activeSelf)
             {
-                darkenBackgroundPanel.SetActive(true);
+                mapPanel.SetActive(false);
             }
             else
             {
-                darkenBackgroundPanel.SetActive(false);
-            }
+                escapeMenuPanel.SetActive(!escapeMenuPanel.activeSelf);
 
-            if (settingsPanel.activeSelf == true)
-            {
-                BackButton();
+
+                if (escapeMenuPanel.activeSelf == true)
+                {
+                    darkenBackgroundPanel.SetActive(true);
+                }
+                else
+                {
+                    darkenBackgroundPanel.SetActive(false);
+                }
+
+                if (settingsPanel.activeSelf == true)
+                {
+                    BackButton();
+                }
             }
         }
 
@@ -129,6 +137,11 @@ public class GameInterface : MonoBehaviour
     public void CloseDevPanel()
     {
         devPanel.SetActive(false);
+    }
+
+    public void CloseWorldMapPanel()
+    {
+        mapPanel.SetActive(false);
     }
 
     public void VisibilityRangeUpateClearMap()

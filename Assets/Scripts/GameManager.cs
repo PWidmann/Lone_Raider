@@ -13,6 +13,7 @@ public static class GameManager
     private static int currentSeed = 0;
     private static int[,] currentMapArray;
     private static SaveData quicksaveData;
+    private static Vector2 playerWorldPos;
 
     public static bool CreateNewWorld { get => createNewWorld; set => createNewWorld = value; }
     public static string NewWorldName { get => newWorldName; set => newWorldName = value; }
@@ -22,4 +23,5 @@ public static class GameManager
     public static int CurrentSeed { get => currentSeed; set => currentSeed = value; }
     public static int[,] CurrentMapArray { get => currentMapArray; set => currentMapArray = value; }
     public static SaveData QuicksaveData { get => quicksaveData; set => quicksaveData = value; }
+    public static Vector2 PlayerWorldPos { get => playerWorldPos; set => playerWorldPos = value; }
 }

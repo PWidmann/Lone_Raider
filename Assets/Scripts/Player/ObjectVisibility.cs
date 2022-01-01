@@ -94,6 +94,15 @@ public class ObjectVisibility: MonoBehaviour
                                     if (Vector3.Distance(playerObject.transform.position, new Vector3(x, y, playerObject.transform.position.z)) < visibilityRange)
                                     {
                                         mapObjects[y, x].SetActive(true);
+
+                                        if (WorldMap.Instance)
+                                        {
+                                            Color tempCol = new Color(WorldMap.Instance.mapTexture.GetPixel(x, y).r, WorldMap.Instance.mapTexture.GetPixel(y, x).g, WorldMap.Instance.mapTexture.GetPixel(y, x).b, WorldMap.Instance.mapTexture.GetPixel(y, x).a);
+                                            
+                                            if(tempCol != Color.red)
+                                                WorldMap.Instance.SetPixel(x, y, Color.red);
+                                        }
+                                            
                                     }
                                     else
                                     {

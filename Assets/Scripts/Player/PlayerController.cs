@@ -18,8 +18,9 @@ public class PlayerController : MonoBehaviour
     
     bool canMove = true;
     bool canAttack = true;
+    private Camera camera;
 
-    new Camera camera;
+    private float intervalTimer = 0;
 
     private void Start()
     {
@@ -33,6 +34,18 @@ public class PlayerController : MonoBehaviour
     }
     void Update()
     {
+        if (intervalTimer < 0.2f)
+        {
+            intervalTimer += Time.deltaTime;
+        }
+        else
+        {
+            intervalTimer = 0;
+
+            GameManager.PlayerWorldPos = new Vector2(transform.position.x, transform.position.y);
+        }
+
+
         if (Input.GetKeyDown(KeyCode.F5))
         {
             SaveData data = SaveSystem.LoadWorld(GameManager.CurrentWorldName);
