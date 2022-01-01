@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 3259125299822757398}
   - component: {fileID: 3259125299822757393}
   m_Layer: 5
-  m_Name: WorldButton
+  m_Name: WorldJoinButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
