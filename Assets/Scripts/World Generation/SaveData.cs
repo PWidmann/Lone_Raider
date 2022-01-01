@@ -6,11 +6,10 @@ using UnityEngine;
 public class SaveData
 {
     public string gameName;
-    public int[,] biomeMapArray;
+    public int[,] biomeMapArray; // 0/1 array, 0 = border, 1 = walkable
     public int seed;
     public float playerXpos;
     public float playerYpos;
-
 
     public SaveData(string _gameName, int[,] _mapArray, int _seed, float _playerX, float _playerY)
     {

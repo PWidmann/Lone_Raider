@@ -7,7 +7,6 @@ public static class SaveSystem
     public static void SaveWorld(string _worldName, int[,] _biomeMapArray, int _seed, float _playerX, float _playerY)
     {
         BinaryFormatter formatter = new BinaryFormatter();
-
         string path = Application.dataPath + "/SaveData/" + _worldName + ".save";
 
         if (!Directory.Exists(Application.dataPath + "/SaveData"))

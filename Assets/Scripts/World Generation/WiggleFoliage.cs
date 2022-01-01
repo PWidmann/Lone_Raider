@@ -16,7 +16,7 @@ public class WiggleFoliage : MonoBehaviour, IInteractible
 
     private void Start()
     {
-        //transform.GetComponent<Renderer>().enabled = false;
+        
     }
 
     private void Update()

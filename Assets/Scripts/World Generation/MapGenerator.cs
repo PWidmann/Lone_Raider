@@ -23,6 +23,13 @@ public class MapGenerator : MonoBehaviour
 
     private Vector2 playerStart;
 
+    Camera cam;
+
+    private void Start()
+    {
+        cam = Camera.main;
+    }
+
     private void Update()
     {
         if (GameManager.CreateNewWorld == true)
@@ -50,7 +57,7 @@ public class MapGenerator : MonoBehaviour
             GameManager.CurrentSeed = saveData.seed;
             GameManager.CurrentMapArray = saveData.biomeMapArray;
             
-            LoadBiomes();
+            LoadBiomes(saveData.biomeMapArray);
 
             LoadPlayerPos(saveData.playerXpos, saveData.playerYpos);
             
@@ -70,8 +77,11 @@ public class MapGenerator : MonoBehaviour
             seed = Random.Range(0, 5000);
             // Create perlin noise with random seed
             noise = new PerlinNoise(seed, 8, 4f, 1f, 1.3f, 6);
-            falloffMap = FalloffGenerator.GenerateFalloffMap(biome.biomeWidth, biome.biomeHeight, 6f, 2f);
+            falloffMap = FalloffGenerator.GenerateFalloffMap(biome.biomeWidth, biome.biomeHeight, 8f, 3f);
             finalMapArray = new int[biome.biomeWidth, biome.biomeHeight];
+
+            // Reset visibility array
+            ObjectVisibility.Instance.MapObjects = new GameObject[biome.biomeHeight, biome.biomeWidth];
 
             // Create biome objects and add scripts for the Unity tilemap system
             GameObject biomeObject = new GameObject(biome.biomeName);
@@ -123,6 +133,10 @@ public class MapGenerator : MonoBehaviour
             playerStart = new Vector2Int(biomes[0].biomeWidth / 3, biomes[0].biomeHeight / 3);
             GameManager.CurrentMapArray = finalMapArray;
 
+            // Here code to fill out the map with houses, npcs and grass patches
+
+
+
             // Capture map values here since this
             // is the main array before
             // it's changed by plant placement
@@ -160,7 +174,8 @@ public class MapGenerator : MonoBehaviour
                 {
                     if (finalMapArray[x, y] == 0) // 0 is border
                     {
-                        if (Random.Range(0, 10) > 7 && !IsNextToObject(x, y, 2, biome))
+                        // 70% chance to spawn a tree, not next to other trees
+                        if (Random.Range(0, 10) > 7 && !IsNextToObject(x, y, 2, biome)) 
                         {
                             int rnd = Random.Range(0, biome.bigBorderObjects.Length);
                             GameObject tree = Instantiate(biome.bigBorderObjects[rnd]);
@@ -168,6 +183,8 @@ public class MapGenerator : MonoBehaviour
             
                             tree.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
                             finalMapArray[x, y] = 2; // 2 = tree
+
+                            ObjectVisibility.Instance.MapObjects[y, x] = tree;
                         }
                     }
                 }
@@ -185,9 +202,29 @@ public class MapGenerator : MonoBehaviour
                         plant.transform.parent = plants.transform;
                         plant.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
                         finalMapArray[x, y] = 3; // 3 = clutter obstacles
+
+                        ObjectVisibility.Instance.MapObjects[y, x] = plant;
                     }
                 }
             }
+
+            // Place wiggle grass
+            //for (int x = 0; x < biome.biomeWidth; x++)
+            //{
+            //    for (int y = 0; y < biome.biomeHeight; y++)
+            //    {
+            //        if (finalMapArray[x, y] == 1) // 1 is walkable
+            //        {
+            //            int rnd = Random.Range(0, biome.walkbyWiggleGrass.Length);
+            //            GameObject grass = Instantiate(biome.walkbyWiggleGrass[rnd]);
+            //            grass.transform.parent = plants.transform;
+            //            grass.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
+            //            finalMapArray[x, y] = 4; // 4 = wiggle grass walkable
+            //
+            //            ObjectVisibility.Instance.MapObjects[y, x] = grass;
+            //        }
+            //    }
+            //}
 
             if (biome.biomeName == "Desert")
             {
@@ -196,11 +233,14 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    void LoadBiomes()
+    void LoadBiomes(int[,] _loadedMapArray)
     {
         foreach (BiomeScriptableObject biome in biomes)
         {          
             finalMapArray = new int[biome.biomeWidth, biome.biomeHeight];
+            finalMapArray = _loadedMapArray;
+
+            ObjectVisibility.Instance.MapObjects = new GameObject[biome.biomeHeight, biome.biomeWidth];
 
             GameObject biomeObject = new GameObject(biome.biomeName);
             biomeObject.transform.parent = transform;
@@ -226,12 +266,6 @@ public class MapGenerator : MonoBehaviour
             Tilemap borderTileMap = borderTileMapObject.GetComponent<Tilemap>();
             groundTileMap.size = new Vector3Int(biome.biomeWidth, biome.biomeHeight, 1);
             borderTileMap.size = new Vector3Int(biome.biomeWidth, biome.biomeHeight, 1);
-
-            finalMapArray = saveData.biomeMapArray;
-            
-
-            
-
 
             // set grass tiles
             for (int x = 0; x < biome.biomeWidth; x++)
@@ -272,6 +306,8 @@ public class MapGenerator : MonoBehaviour
             
                             tree.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
                             finalMapArray[x, y] = 2; // 2 = tree
+
+                            ObjectVisibility.Instance.MapObjects[y, x] = tree;
                         }
                     }
                 }
@@ -289,9 +325,28 @@ public class MapGenerator : MonoBehaviour
                         plant.transform.parent = plants.transform;
                         plant.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
                         finalMapArray[x, y] = 3; // 3 = clutter obstacles
+                        ObjectVisibility.Instance.MapObjects[y, x] = plant;
                     }
                 }
             }
+
+            // Place wiggle grass
+            //for (int x = 0; x < biome.biomeWidth; x++)
+            //{
+            //    for (int y = 0; y < biome.biomeHeight; y++)
+            //    {
+            //        if (finalMapArray[x, y] == 1) // 1 is walkable
+            //        {
+            //            int rnd = Random.Range(0, biome.walkbyWiggleGrass.Length);
+            //            GameObject grass = Instantiate(biome.walkbyWiggleGrass[rnd]);
+            //            grass.transform.parent = plants.transform;
+            //            grass.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
+            //            finalMapArray[x, y] = 4; // 4 = wiggle grass walkable
+            //
+            //            ObjectVisibility.Instance.MapObjects[y, x] = grass;
+            //        }
+            //    }
+            //}
 
             if (biome.biomeName == "Desert")
             {
@@ -310,6 +365,7 @@ public class MapGenerator : MonoBehaviour
     {
         if (!playerSpawned)
         {
+            // Spawn somewhat in the middle of the map
             for (int x = 30; x < GameManager.CurrentMapArray.GetLength(0) -30 ; x++)
             {
                 for (int y = 30; y < GameManager.CurrentMapArray.GetLength(1) -30; y++)
@@ -324,6 +380,7 @@ public class MapGenerator : MonoBehaviour
                             playerSpawned = true;
                             playerStart.x = x;
                             playerStart.y = y;
+                            cam.transform.position = new Vector3(x, y, -3.861016f);
 
                             return;
                         }
@@ -343,6 +400,8 @@ public class MapGenerator : MonoBehaviour
             playerSpawned = true;
             playerStart.x = xPos;
             playerStart.y = yPos;
+
+            cam.transform.position = new Vector3(xPos, yPos, -3.861016f);
         }
     }
 

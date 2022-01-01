@@ -11,13 +11,14 @@ GameObject:
   - component: {fileID: 6881049287998918085}
   - component: {fileID: 6881049287998918082}
   - component: {fileID: 6881049287998918083}
-  m_Layer: 0
+  - component: {fileID: -8542737522489614643}
+  m_Layer: 11
   m_Name: borderBush
-  m_TagString: Untagged
+  m_TagString: BorderTrees
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6881049287998918085
 Transform:
   m_ObjectHideFlags: 0
@@ -98,3 +99,19 @@ MonoBehaviour:
   sortingOrderBase: 20000
   offset: -0.8
   runOnlyOnce: 1
+--- !u!58 &-8542737522489614643
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6881049287998918080}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5

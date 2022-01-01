@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 1.3f;
     [SerializeField] Light2D lightPlayer;
+    [SerializeField] float maxCameraZoom = 40f;
 
     Animator animator;
     Rigidbody2D rb2D;
@@ -53,8 +54,8 @@ public class PlayerController : MonoBehaviour
 
             if (camera.orthographicSize < 2f)
                 camera.orthographicSize = 2f;
-            if (camera.orthographicSize > 30f)
-                camera.orthographicSize = 30f;
+            if (camera.orthographicSize > maxCameraZoom)
+                camera.orthographicSize = maxCameraZoom;
         }
 
 

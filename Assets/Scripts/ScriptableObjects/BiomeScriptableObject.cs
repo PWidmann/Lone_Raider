@@ -15,4 +15,5 @@ public class BiomeScriptableObject : ScriptableObject
     [Tooltip("Prefabs which build the map border")]
     [SerializeField] public GameObject[] littleBorderObjects;
     [SerializeField] public GameObject[] bigBorderObjects;
+    [SerializeField] public GameObject[] walkbyWiggleGrass;
 }

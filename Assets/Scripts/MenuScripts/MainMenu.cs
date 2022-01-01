@@ -35,6 +35,7 @@ public class MainMenu : MonoBehaviour
         {
             GameManager.CreateNewWorld = true;
             GameManager.NewWorldName = levelName.text;
+            ObjectVisibility.Instance.PlayerActive = false;
             SceneManager.LoadScene("GameWorldScene");
         }
     }

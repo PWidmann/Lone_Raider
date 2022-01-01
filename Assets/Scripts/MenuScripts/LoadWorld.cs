@@ -11,6 +11,7 @@ public class LoadWorld : MonoBehaviour
         GameManager.LoadWorldName = fileName;
         GameManager.LoadWorld = true;
 
+        ObjectVisibility.Instance.PlayerActive = false;
         SceneManager.LoadScene("GameWorldScene");
     }
 }

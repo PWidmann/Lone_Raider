@@ -12,6 +12,7 @@ public class GameInterface : MonoBehaviour
     [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject quicksavePanel;
     [SerializeField] private GameObject darkenBackgroundPanel;
+    [SerializeField] private GameObject devPanel;
 
     [SerializeField] private Dropdown resolutionDropdown;
     [SerializeField] private Dropdown windowDropdown;
@@ -80,6 +81,7 @@ public class GameInterface : MonoBehaviour
 
     public void MainMenuButton()
     {
+        ObjectVisibility.Instance.PlayerActive = false;
         SceneManager.LoadScene("MainMenu");
     }
 
@@ -111,5 +113,22 @@ public class GameInterface : MonoBehaviour
         startQuicksave = true;
         quicksaveTimer = 2f;
         quicksavePanel.SetActive(true);
+    }
+
+    public void ShowDevWindowPanel()
+    {
+        settingsPanel.SetActive(false);
+        devPanel.SetActive(true);
+        darkenBackgroundPanel.SetActive(false);
+    }
+
+    public void CloseDevPanel()
+    {
+        devPanel.SetActive(false);
+    }
+
+    public void VisibilityRangeUpateClearMap()
+    {
+        ObjectVisibility.Instance.DisableAllObjectsOnMap();
     }
 }
