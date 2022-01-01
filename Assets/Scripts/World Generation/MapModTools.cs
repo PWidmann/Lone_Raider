@@ -10,7 +10,7 @@ public static class MapModTools
 
         
 
-        int enemyCount = 10;
+        //int enemyCount = 10;
 
         // 0 = border
         // 1 = walkable

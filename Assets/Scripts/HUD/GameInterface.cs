@@ -1,7 +1,6 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.Experimental.Rendering.Universal;
 
 public class GameInterface : MonoBehaviour
 {
@@ -17,8 +16,6 @@ public class GameInterface : MonoBehaviour
 
     [SerializeField] private Dropdown resolutionDropdown;
     [SerializeField] private Dropdown windowDropdown;
-
-    public Light2D ambientLight;
 
     private float quicksaveTimer;
     private bool startQuicksave = false;

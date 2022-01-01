@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6881049287998918085}
   - component: {fileID: 6881049287998918082}
   - component: {fileID: 6881049287998918083}
-  - component: {fileID: 8024762179638922476}
   - component: {fileID: -5246241801568086667}
   m_Layer: 11
   m_Name: borderTree3
@@ -53,7 +52,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -100,32 +99,6 @@ MonoBehaviour:
   sortingOrderBase: 20000
   offset: 0.25
   runOnlyOnce: 1
---- !u!114 &8024762179638922476
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6881049287998918080}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7db70e0ea77f5ac47a8f4565a9406397, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_ShadowGroup: 0
-  m_HasRenderer: 1
-  m_UseRendererSilhouette: 1
-  m_CastsShadows: 1
-  m_SelfShadows: 0
-  m_ApplyToSortingLayers: 00000000
-  m_ShapePath:
-  - {x: -0.15211868, y: -1.2217102, z: 0}
-  - {x: 0.15618134, y: -1.2337456, z: 0}
-  - {x: 0.16727448, y: -1.0429993, z: 0}
-  - {x: -0.12581253, y: -1.041359, z: 0}
-  m_ShapePathHash: 1940790933
-  m_Mesh: {fileID: 0}
-  m_InstanceId: 36804
 --- !u!58 &-5246241801568086667
 CircleCollider2D:
   m_ObjectHideFlags: 0

@@ -1,12 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering.Universal;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 1.3f;
-    [SerializeField] Light2D lightPlayer;
     [SerializeField] float maxCameraZoom = 40f;
 
     Animator animator;
@@ -20,8 +18,6 @@ public class PlayerController : MonoBehaviour
     
     bool canMove = true;
     bool canAttack = true;
-
-    bool nightOn = false;
 
     new Camera camera;
 
@@ -86,23 +82,6 @@ public class PlayerController : MonoBehaviour
                 canAttack = false;
                 canMove = false;
             }  
-        }
-
-        // Night mode
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            nightOn = !nightOn;
-
-            if (nightOn)
-            {
-                lightPlayer.intensity = 0.9f;
-                GameInterface.Instance.ambientLight.intensity = 0;
-            }
-            else
-            {
-                lightPlayer.intensity = 0.0f;
-                GameInterface.Instance.ambientLight.intensity = 0.9f;
-            }
         }
 
         if (Input.GetKey(KeyCode.LeftShift))
