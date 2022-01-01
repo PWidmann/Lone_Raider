@@ -10,7 +10,7 @@ Save and load system for the world and character
 
 Character Controller with move and attack animations
 
-Custom object culling sytem for max performance on big maps
+Custom object culling sytem performance optimized for many objects on big maps
 
 Player map, progresses as the player unveils the world
 
