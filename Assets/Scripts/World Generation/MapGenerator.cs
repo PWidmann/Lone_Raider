@@ -77,7 +77,7 @@ public class MapGenerator : MonoBehaviour
             seed = Random.Range(0, 5000);
             // Create perlin noise with random seed
             noise = new PerlinNoise(seed, 8, 4f, 1f, 1.3f, 6);
-            falloffMap = FalloffGenerator.GenerateFalloffMap(biome.biomeWidth, biome.biomeHeight, 8f, 3f);
+            falloffMap = FalloffGenerator.GenerateFalloffMap(biome.biomeWidth, biome.biomeHeight, 6f, 7f);
             finalMapArray = new int[biome.biomeWidth, biome.biomeHeight];
 
             // Reset visibility array
@@ -132,15 +132,6 @@ public class MapGenerator : MonoBehaviour
 
             playerStart = new Vector2Int(biomes[0].biomeWidth / 3, biomes[0].biomeHeight / 3);
             
-
-            // Here code to fill out the map with houses, npcs and grass patches
-
-
-
-            
-            
-            
-
             // set grass tiles
             for (int x = 0; x < biome.biomeWidth; x++)
             {
