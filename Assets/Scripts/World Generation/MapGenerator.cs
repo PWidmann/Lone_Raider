@@ -1,15 +1,22 @@
 ﻿using System.IO;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-
+using UnityEngine.UI;
 
 public class MapGenerator : MonoBehaviour
 {
     [SerializeField] BiomeScriptableObject[] biomes = new BiomeScriptableObject[2];
-    [SerializeField] Tile emptyTile;
+    [SerializeField] Tile emptyCollisionTile;
 
     [Header("Player Prefab")]
     [SerializeField] GameObject playerPrefab;
+
+    [Header("Player Prefab")]
+    [SerializeField] int mapWidth = 200;
+    [SerializeField] int mapHeight = 200;
+
+    [Header("Map Preview Image")]
+    [SerializeField] RawImage mapPreviewImage;
 
     private PerlinNoise noise;
     private float[,] noiseValues;
@@ -34,9 +41,8 @@ public class MapGenerator : MonoBehaviour
     {
         if (GameManager.CreateNewWorld == true)
         {
-            CreateBiomes();
-
-            
+            SetupMap();
+            CreateCities();
 
             Debug.Log("Created new world '" + GameManager.NewWorldName + "' and saved world to file");
             GameManager.CurrentWorldName = GameManager.NewWorldName;
@@ -57,385 +63,169 @@ public class MapGenerator : MonoBehaviour
             GameManager.CurrentSeed = saveData.seed;
             GameManager.CurrentMapArray = saveData.biomeMapArray;
             
-            LoadBiomes(saveData.biomeMapArray);
+            LoadLevel(saveData.biomeMapArray);
 
-            LoadPlayerPos(saveData.playerXpos, saveData.playerYpos);
-            
+            LoadPlayerPos(saveData.playerXpos, saveData.playerYpos); 
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            CreateCities();
         }
     }
 
     
 
-    void CreateBiomes()
+    void CreateCities()
     {
-        // Add biomes (scriptable objects) in the mapgenerator component in the main scene
-        foreach (BiomeScriptableObject biome in biomes)
+        // Finalmap array values
+        //
+        // 0 = border / not walkable
+        // 1 = grass (random piece)
+        // 2 = city area
+        // 3 = city street
+        //
+        //
+        //
+        //
+
+        finalMapArray = MapModTools.MakeMapAllGrass(finalMapArray);
+        finalMapArray = MapModTools.CreateCityAreas(finalMapArray);
+
+
+        GameManager.CurrentMapArray = finalMapArray;
+
+        //SaveWorld();
+        //SpawnPlayer();
+
+
+        Texture2D mapTexture = new Texture2D(mapWidth, mapHeight);
+        mapTexture.filterMode = FilterMode.Point;
+
+        for (int x = 0; x < mapWidth; x++)
         {
-            ////
-            /// Main algorithm how biomes look
-
-            seed = Random.Range(0, 5000);
-            // Create perlin noise with random seed
-            noise = new PerlinNoise(seed, 8, 4f, 1f, 1.3f, 6);
-            falloffMap = FalloffGenerator.GenerateFalloffMap(biome.biomeWidth, biome.biomeHeight, 6f, 7f);
-            finalMapArray = new int[biome.biomeWidth, biome.biomeHeight];
-
-            // Reset visibility array
-            ObjectVisibility.Instance.MapObjects = new GameObject[biome.biomeHeight, biome.biomeWidth];
-
-            // Create biome objects and add scripts for the Unity tilemap system
-            GameObject biomeObject = new GameObject(biome.biomeName);
-            biomeObject.transform.parent = transform;
-
-            // Basic floor tilemap
-            GameObject groundTileMapObject = new GameObject("GroundTileMap");
-            groundTileMapObject.transform.parent = biomeObject.transform;
-            groundTileMapObject.AddComponent<Tilemap>();
-            groundTileMapObject.AddComponent<TilemapRenderer>().sortingOrder = -20000;
-
-            // Collision map
-            GameObject borderTileMapObject = new GameObject("BorderTileMap");
-            borderTileMapObject.transform.parent = biomeObject.transform;
-            borderTileMapObject.AddComponent<Tilemap>();
-            borderTileMapObject.AddComponent<TilemapRenderer>();
-            borderTileMapObject.AddComponent<Rigidbody2D>().gravityScale = 0;
-            borderTileMapObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePosition;
-            borderTileMapObject.GetComponent<Rigidbody2D>().freezeRotation = true;
-            borderTileMapObject.AddComponent<CompositeCollider2D>();
-            borderTileMapObject.AddComponent<TilemapCollider2D>().usedByComposite = true;
-
-            // Set size of map objects
-            Tilemap groundTileMap = groundTileMapObject.GetComponent<Tilemap>();
-            Tilemap borderTileMap = borderTileMapObject.GetComponent<Tilemap>();
-            groundTileMap.size = new Vector3Int(biome.biomeWidth, biome.biomeHeight, 1);
-            borderTileMap.size = new Vector3Int(biome.biomeWidth, biome.biomeHeight, 1);
-            noiseValues = noise.GetNoiseValues(biome.biomeWidth, biome.biomeHeight);
-
-
-            // Fill final map array with noise values
-            for (int x = 0; x < biome.biomeWidth; x++)
+            for (int y = 0; y < mapHeight; y++)
             {
-                for (int y = 0; y < biome.biomeHeight; y++)
+                switch (finalMapArray[y, x])
                 {
-                    noiseValues[x, y] = Mathf.Clamp01(noiseValues[x, y] - falloffMap[x, y]);
-
-                    if (noiseValues[x, y] > 0.35f)
-                    {
-                        finalMapArray[x, y] = 1; // 1 = grass
-                    }
-                    else
-                    {
-                        finalMapArray[x, y] = 0; // 0 = border
-                    }
+                    case 1:
+                        mapTexture.SetPixel(x, y, Color.green); // Grass green
+                        break;
+                    case 2:
+                        mapTexture.SetPixel(x, y, Color.grey); // City area grey
+                        break;
+                    case 3:
+                        break;
+                    default:
+                        break;
                 }
-            }
-
-            playerStart = new Vector2Int(biomes[0].biomeWidth / 3, biomes[0].biomeHeight / 3);
-            
-            // set grass tiles
-            for (int x = 0; x < biome.biomeWidth; x++)
-            {
-                for (int y = 0; y < biome.biomeHeight; y++)
-                {
-                    Tile currentTile = GetRandomGroundTile(biome);
-                    groundTileMap.SetTile(new Vector3Int(x, y, 0), currentTile);
-                }
-            }
-
-            // set border collision
-            for (int x = 0; x < biome.biomeWidth; x++)
-            {
-                for (int y = 0; y < biome.biomeHeight; y++)
-                {
-                    if (finalMapArray[x, y] == 0)
-                        borderTileMap.SetTile(new Vector3Int(x, y, 0), emptyTile);
-                }
-            }
-
-            ////
-            //// 0 = border
-            //// 1 = walkable
-            //// 2 = tree1
-            //// 3 = tree2
-            //// 4 = tree3
-            //// 5 = bush1
-            //// 6 = bush2
-            ////
-            
-            GameObject plants = new GameObject("Border Plants");
-            plants.transform.parent = biomeObject.transform;
-
-            // place big trees
-            for (int x = 0; x < biome.biomeWidth; x++)
-            {
-                for (int y = 0; y < biome.biomeHeight; y++)
-                {
-                    if (finalMapArray[x, y] == 0) // 0 is border
-                    {
-                        // 70% chance to spawn a tree, not next to other trees
-                        if (Random.Range(0, 10) > 7 && !IsNextToObject(x, y, 2, biome)) 
-                        {
-                            int rnd = Random.Range(0, biome.bigBorderObjects.Length);
-                            GameObject tree = Instantiate(biome.bigBorderObjects[rnd]);
-                            tree.transform.parent = plants.transform;
-            
-                            tree.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
-
-                            switch (rnd)
-                            {
-                                case 0:
-                                    finalMapArray[x, y] = 2;
-                                    break;
-                                case 1:
-                                    finalMapArray[x, y] = 3;
-                                    break;
-                                case 2:
-                                    finalMapArray[x, y] = 4;
-                                    break;
-                            }
-
-                            ObjectVisibility.Instance.MapObjects[y, x] = tree;
-                        }
-                    }
-                }
-            }
-
-            // Fill up border with bushes
-            for (int x = 0; x < biome.biomeWidth; x++)
-            {
-                for (int y = 0; y < biome.biomeHeight; y++)
-                {
-                    if (finalMapArray[x, y] == 0) // 0 is border
-                    {
-                        int rnd = Random.Range(0, biome.littleBorderObjects.Length);
-                        GameObject plant = Instantiate(biome.littleBorderObjects[rnd]);
-                        plant.transform.parent = plants.transform;
-                        plant.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
-                        
-
-                        switch (rnd)
-                        {
-                            case 0:
-                                finalMapArray[x, y] = 5;
-                                break;
-                            case 1:
-                                finalMapArray[x, y] = 6;
-                                break;
-                            case 2:
-                                finalMapArray[x, y] = 7;
-                                break;
-                        }
-
-                        ObjectVisibility.Instance.MapObjects[y, x] = plant;
-                    }
-                }
-            }
-
-            GameManager.CurrentMapArray = finalMapArray;
-
-            SaveWorld();
-            SpawnPlayer();
-            // Place wiggle grass
-            //for (int x = 0; x < biome.biomeWidth; x++)
-            //{
-            //    for (int y = 0; y < biome.biomeHeight; y++)
-            //    {
-            //        if (finalMapArray[x, y] == 1) // 1 is walkable
-            //        {
-            //            int rnd = Random.Range(0, biome.walkbyWiggleGrass.Length);
-            //            GameObject grass = Instantiate(biome.walkbyWiggleGrass[rnd]);
-            //            grass.transform.parent = plants.transform;
-            //            grass.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
-            //            finalMapArray[x, y] = 4; // 4 = wiggle grass walkable
-            //
-            //            ObjectVisibility.Instance.MapObjects[y, x] = grass;
-            //        }
-            //    }
-            //}
-
-            if (biome.biomeName == "Desert")
-            {
-                biomeObject.transform.position += new Vector3(100, 0, 0);
             }
         }
+
+        mapTexture.Apply();
+        mapPreviewImage.texture = mapTexture;
     }
 
-    void LoadBiomes(int[,] _loadedMapArray)
+    void LoadLevel(int[,] _loadedMapArray)
     {
-        foreach (BiomeScriptableObject biome in biomes)
-        {          
-            finalMapArray = new int[biome.biomeWidth, biome.biomeHeight];
-            finalMapArray = _loadedMapArray;
+        finalMapArray = new int[mapWidth, mapHeight];
+        finalMapArray = _loadedMapArray;
 
-            ObjectVisibility.Instance.MapObjects = new GameObject[biome.biomeHeight, biome.biomeWidth];
+        ObjectVisibility.Instance.MapObjects = new GameObject[mapWidth, mapHeight];
 
-            GameObject biomeObject = new GameObject(biome.biomeName);
-            biomeObject.transform.parent = transform;
+        GameObject biomeObject = new GameObject("Map");
+        biomeObject.transform.parent = transform;
 
 
-            GameObject groundTileMapObject = new GameObject("GroundTileMap");
-            groundTileMapObject.transform.parent = biomeObject.transform;
-            groundTileMapObject.AddComponent<Tilemap>();
-            groundTileMapObject.AddComponent<TilemapRenderer>().sortingOrder = -20000;
+        GameObject groundTileMapObject = new GameObject("GroundTileMap");
+        groundTileMapObject.transform.parent = biomeObject.transform;
+        groundTileMapObject.AddComponent<Tilemap>();
+        groundTileMapObject.AddComponent<TilemapRenderer>().sortingOrder = -20000;
 
-            GameObject borderTileMapObject = new GameObject("BorderTileMap");
-            borderTileMapObject.transform.parent = biomeObject.transform;
-            borderTileMapObject.AddComponent<Tilemap>();
-            borderTileMapObject.AddComponent<TilemapRenderer>();
-            borderTileMapObject.AddComponent<Rigidbody2D>().gravityScale = 0;
-            borderTileMapObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePosition;
-            borderTileMapObject.GetComponent<Rigidbody2D>().freezeRotation = true;
-            borderTileMapObject.AddComponent<CompositeCollider2D>();
-            borderTileMapObject.AddComponent<TilemapCollider2D>().usedByComposite = true;
-
-
-            Tilemap groundTileMap = groundTileMapObject.GetComponent<Tilemap>();
-            Tilemap borderTileMap = borderTileMapObject.GetComponent<Tilemap>();
-            groundTileMap.size = new Vector3Int(biome.biomeWidth, biome.biomeHeight, 1);
-            borderTileMap.size = new Vector3Int(biome.biomeWidth, biome.biomeHeight, 1);
-
-            // set grass tiles
-            for (int x = 0; x < biome.biomeWidth; x++)
-            {
-                for (int y = 0; y < biome.biomeHeight; y++)
-                {
-                    Tile currentTile = GetRandomGroundTile(biome);
-                    groundTileMap.SetTile(new Vector3Int(x, y, 0), currentTile);
-                }
-            }
-
-            // set border collision
-            for (int x = 0; x < biome.biomeWidth; x++)
-            {
-                for (int y = 0; y < biome.biomeHeight; y++)
-                {
-                    if (finalMapArray[x, y] == 0)
-                        borderTileMap.SetTile(new Vector3Int(x, y, 0), emptyTile);
-                }
-            }
+        GameObject borderTileMapObject = new GameObject("BorderTileMap");
+        borderTileMapObject.transform.parent = biomeObject.transform;
+        borderTileMapObject.AddComponent<Tilemap>();
+        borderTileMapObject.AddComponent<TilemapRenderer>();
+        borderTileMapObject.AddComponent<Rigidbody2D>().gravityScale = 0;
+        borderTileMapObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePosition;
+        borderTileMapObject.GetComponent<Rigidbody2D>().freezeRotation = true;
+        borderTileMapObject.AddComponent<CompositeCollider2D>();
+        borderTileMapObject.AddComponent<TilemapCollider2D>().usedByComposite = true;
 
 
-            GameObject plants = new GameObject("Border Plants");
-            plants.transform.parent = biomeObject.transform;
+        Tilemap groundTileMap = groundTileMapObject.GetComponent<Tilemap>();
+        Tilemap borderTileMap = borderTileMapObject.GetComponent<Tilemap>();
+        groundTileMap.size = new Vector3Int(mapWidth, mapHeight, 1);
+        borderTileMap.size = new Vector3Int(mapWidth, mapHeight, 1);
 
-            // Place map objects
-            for (int x = 0; x < biome.biomeWidth; x++)
-            {
-                for (int y = 0; y < biome.biomeHeight; y++)
-                {
-                    switch (finalMapArray[x, y])
-                    {
-                        case 0:
-                            break;
-                        case 1:
-                            break;
-                        case 2:
-                            GameObject tree = Instantiate(biome.bigBorderObjects[0]);
-                            tree.transform.parent = plants.transform;
-                            tree.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
-                            ObjectVisibility.Instance.MapObjects[y, x] = tree;
-                            borderTileMap.SetTile(new Vector3Int(x, y, 0), emptyTile);
-                            break;
-                        case 3:
-                            GameObject tree2 = Instantiate(biome.bigBorderObjects[1]);
-                            tree2.transform.parent = plants.transform;
-                            tree2.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
-                            ObjectVisibility.Instance.MapObjects[y, x] = tree2;
-                            borderTileMap.SetTile(new Vector3Int(x, y, 0), emptyTile);
-                            break;
-                        case 4:
-                            GameObject tree3 = Instantiate(biome.bigBorderObjects[2]);
-                            tree3.transform.parent = plants.transform;
-                            tree3.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
-                            ObjectVisibility.Instance.MapObjects[y, x] = tree3;
-                            borderTileMap.SetTile(new Vector3Int(x, y, 0), emptyTile);
-                            break;
-                        case 5:
-                            GameObject plant = Instantiate(biome.littleBorderObjects[0]);
-                            plant.transform.parent = plants.transform;
-                            plant.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
-                            ObjectVisibility.Instance.MapObjects[y, x] = plant;
-                            borderTileMap.SetTile(new Vector3Int(x, y, 0), emptyTile);
-                            break;
-                        case 6:
-                            GameObject plant2 = Instantiate(biome.littleBorderObjects[1]);
-                            plant2.transform.parent = plants.transform;
-                            plant2.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
-                            ObjectVisibility.Instance.MapObjects[y, x] = plant2;
-                            borderTileMap.SetTile(new Vector3Int(x, y, 0), emptyTile);
-                            break;
-                        case 7:
-                            break;
-                    }
-                }
-            }
+        // set grass tiles
+        //for (int x = 0; x < mapWidth; x++)
+        //{
+        //    for (int y = 0; y < mapHeight; y++)
+        //    {
+        //        Tile currentTile = GetRandomGroundTile(biome);
+        //        groundTileMap.SetTile(new Vector3Int(x, y, 0), currentTile);
+        //    }
+        //}
+
+        // set border collision
+        //for (int x = 0; x < biome.biomeWidth; x++)
+        //{
+        //    for (int y = 0; y < biome.biomeHeight; y++)
+        //    {
+        //        if (finalMapArray[x, y] == 0)
+        //            borderTileMap.SetTile(new Vector3Int(x, y, 0), emptyCollisionTile);
+        //    }
+        //}
 
 
-            // place big trees
-            //for (int x = 0; x < biome.biomeWidth; x++)
-            //
-            //   for (int y = 0; y < biome.biomeHeight; y++)
-            //   {
-            //       if (finalMapArray[x, y] == 0) // 0 is border
-            //       {
-            //           if (Random.Range(0, 10) > 7 && !IsNextToObject(x, y, 2, biome))
-            //           {
-            //               int index = _loadedMapArray[x,y]
-            //
-            //               int rnd = Random.Range(0, biome.bigBorderObjects.Length);
-            //               GameObject tree = Instantiate(biome.bigBorderObjects[rnd]);
-            //               tree.transform.parent = plants.transform;
-            //
-            //               tree.gameObject.transform.position = new Vector3(x + 0.5f, y + 1.5f, -1f);
-            //               finalMapArray[x, y] = 2; // 2 = tree
-            //
-            //               ObjectVisibility.Instance.MapObjects[y, x] = tree;
-            //           }
-            //       }
-            //   }
-            //
-
-            // Fill up border with little obstacles
-            //for (int x = 0; x < biome.biomeWidth; x++)
-            //{
-            //    for (int y = 0; y < biome.biomeHeight; y++)
-            //    {
-            //        if (finalMapArray[x, y] == 0) // 0 is border
-            //        {
-            //            int rnd = Random.Range(0, biome.littleBorderObjects.Length);
-            //            GameObject plant = Instantiate(biome.littleBorderObjects[rnd]);
-            //            plant.transform.parent = plants.transform;
-            //            plant.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
-            //            finalMapArray[x, y] = 3; // 3 = clutter obstacles
-            //            ObjectVisibility.Instance.MapObjects[y, x] = plant;
-            //        }
-            //    }
-            //}
-
-            // Place wiggle grass
-            //for (int x = 0; x < biome.biomeWidth; x++)
-            //{
-            //    for (int y = 0; y < biome.biomeHeight; y++)
-            //    {
-            //        if (finalMapArray[x, y] == 1) // 1 is walkable
-            //        {
-            //            int rnd = Random.Range(0, biome.walkbyWiggleGrass.Length);
-            //            GameObject grass = Instantiate(biome.walkbyWiggleGrass[rnd]);
-            //            grass.transform.parent = plants.transform;
-            //            grass.gameObject.transform.position = new Vector3(x + 0.5f, y + 0.5f, -1f);
-            //            finalMapArray[x, y] = 4; // 4 = wiggle grass walkable
-            //
-            //            ObjectVisibility.Instance.MapObjects[y, x] = grass;
-            //        }
-            //    }
-            //}
-
-            if (biome.biomeName == "Desert")
-            {
-                biomeObject.transform.position += new Vector3(100, 0, 0);
-            }
-        }
     }
+
+    void SetupMap()
+    {
+        // Reset visibility array
+        ObjectVisibility.Instance.MapObjects = new GameObject[mapHeight, mapWidth];
+
+        // Create biome objects and add scripts for the Unity tilemap system
+        GameObject biomeObject = new GameObject("Map");
+        biomeObject.transform.parent = transform;
+
+        // Basic floor tilemap
+        GameObject groundTileMapObject = new GameObject("GroundTileMap");
+        groundTileMapObject.transform.parent = biomeObject.transform;
+        groundTileMapObject.AddComponent<Tilemap>();
+        groundTileMapObject.AddComponent<TilemapRenderer>().sortingOrder = -20000;
+
+        // Collision map
+        GameObject borderTileMapObject = new GameObject("BorderTileMap");
+        borderTileMapObject.transform.parent = biomeObject.transform;
+        borderTileMapObject.AddComponent<Tilemap>();
+        borderTileMapObject.AddComponent<TilemapRenderer>();
+        borderTileMapObject.AddComponent<Rigidbody2D>().gravityScale = 0;
+        borderTileMapObject.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezePosition;
+        borderTileMapObject.GetComponent<Rigidbody2D>().freezeRotation = true;
+        borderTileMapObject.AddComponent<CompositeCollider2D>();
+        borderTileMapObject.AddComponent<TilemapCollider2D>().usedByComposite = true;
+
+        // Set size of map objects
+        Tilemap groundTileMap = groundTileMapObject.GetComponent<Tilemap>();
+        Tilemap borderTileMap = borderTileMapObject.GetComponent<Tilemap>();
+        groundTileMap.size = new Vector3Int(mapWidth, mapHeight, 1);
+        borderTileMap.size = new Vector3Int(mapWidth, mapHeight, 1);
+        //noiseValues = noise.GetNoiseValues(biome.biomeWidth, biome.biomeHeight);
+
+        seed = Random.Range(0, 5000);
+        // Create perlin noise with random seed
+        noise = new PerlinNoise(seed, 8, 4f, 1f, 1.3f, 6);
+        falloffMap = FalloffGenerator.GenerateFalloffMap(mapWidth, mapHeight, 6f, 7f);
+        finalMapArray = new int[mapWidth, mapHeight];
+
+        
+
+        RectTransform rt = mapPreviewImage.gameObject.GetComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(mapWidth, mapHeight);
+    }
+
 
     private void SaveWorld()
     {
